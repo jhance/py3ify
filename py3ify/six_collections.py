@@ -12,6 +12,7 @@ _CONVERSION_MAP = {
     "viewvalues": "values",
 }
 
+
 class ConvertSixCollections(VisitorBasedCodemodCommand):
     """
     Transform 
@@ -30,16 +31,20 @@ class ConvertSixCollections(VisitorBasedCodemodCommand):
       func=Attribute(value=ARGUMENT, attr=Name(value='items')
     )
     """
+
     def leave_Call(self, original: libcst.Call, updated: libcst.Call) -> libcst.Call:
         if m.matches(updated.func.value, m.Name("six")):
             for orig_name, updated_name in _CONVERSION_MAP.items():
                 if m.matches(updated.func.attr, m.Name(orig_name)):
                     if len(updated.args) != 1:
-                        self.warn(f"Odd six.{orig_name} call does not have one argument. Cannot perform substitution.")
+                        self.warn(
+                            f"Odd six.{orig_name} call does not have one argument. Cannot perform substitution."
+                        )
                         continue
                     value = updated.args[0].value
-                    return libcst.Call(func=libcst.Attribute(
-                        value=value,
-                        attr=libcst.Name(value=updated_name),
-                    ))
+                    return libcst.Call(
+                        func=libcst.Attribute(
+                            value=value, attr=libcst.Name(value=updated_name),
+                        )
+                    )
         return updated
