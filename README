@@ -1,0 +1,15 @@
+Collection of libcst fixers to aid with the removal of dependencies on
+the library "six" from code that was once straddling py2/py3 and now only
+needs py3 compatibility.
+
+It is expected that we can mostly automate most changes except for
+six.ensure_str, which is ambiguous (either a text->text no-op, a
+binary->text decode, or a conditional decode that is accepting both
+binary and text). It may be possible later to involve mypy to aid in
+this.
+
+For six.ensure_binary and six.ensure_text, we are assuming that the
+original datatype was 'str', so six.ensure_text will resolve to a no-op
+and six.ensure_binary will resolve to an encode. (Reasoning: if it was
+not a 'str', then either encode/decode could have been used, and cases
+where there was a union of either should not have been using six.)
