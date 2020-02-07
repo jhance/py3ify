@@ -11,6 +11,7 @@ _CONVERSION_MAP = {
     "string_types": libcst.Name("str"),
     "text_type": libcst.Name("str"),
     "binary_type": libcst.Name("bytes"),
+    # TODO need to import sys automatically if we do this
     "MAXSIZE": libcst.Attribute(value=libcst.Name("sys"), attr=libcst.Name("maxsize")),
 }
 
