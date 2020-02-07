@@ -34,7 +34,9 @@ class ConvertSixCollections(VisitorBasedCodemodCommand):
         if m.matches(updated.func.value, m.Name("six")):
             for orig_name, updated_name in _CONVERSION_MAP.items():
                 if m.matches(updated.func.attr, m.Name(orig_name)):
-                    assert len(updated.args) == 1
+                    if len(updated.args) != 1:
+                        self.warn(f"Odd six.{orig_name} call does not have one argument. Cannot perform substitution.")
+                        continue
                     value = updated.args[0].value
                     return libcst.Call(func=libcst.Attribute(
                         value=value,
